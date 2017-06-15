@@ -56,7 +56,7 @@ namespace DriverFramework
 /**
  * Get the absolute time off the system realtime clock
  *
- * @param timespec the realtime time
+ * @param ts the realtime time
  *
  * @return 0 if successful, nonzero else
  */
@@ -68,7 +68,7 @@ int absoluteTimeInFuture(uint64_t time_us, struct timespec &ts);
 /**
  * Get the absolute time off the system monotonic clock
  *
- * @param timespec the realtime time
+ * @param ts the realtime time
  *
  * @return 0 if successful, nonzero else
  */
@@ -85,10 +85,10 @@ class Framework
 public:
 	// Initialize the driver framework
 	// This function must be called before any of the functions below
-	static int initialize(void);
+	static int initialize();
 
 	// Terminate the driver framework
-	static void shutdown(void);
+	static void shutdown();
 
 	// Block until shutdown requested
 	static void waitForShutdown();

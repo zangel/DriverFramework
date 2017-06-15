@@ -74,11 +74,11 @@ public:
 	void shutdown();
 	void enableStats(bool enable);
 
-	static void *process_trampoline(void *);
+	static void *process_trampoline(void * /*arg*/);
 
 private:
-	HRTWorkQueue() {}
-	~HRTWorkQueue() {}
+	HRTWorkQueue() = default;
+	~HRTWorkQueue() = default;
 
 	void process();
 
@@ -116,9 +116,7 @@ static SyncObj *g_framework;
 
 static uint64_t TsToAbstime(struct timespec *ts)
 {
-	uint64_t result;
-
-	result = (uint64_t)(ts->tv_sec) * 1000000;
+	uint64_t result = (uint64_t)(ts->tv_sec) * 1000000UL;
 	result += ts->tv_nsec / 1000;
 
 	return result;
@@ -319,7 +317,7 @@ void Framework::waitForShutdown()
 static void show_sched_settings()
 {
 	int policy;
-	struct sched_param param;
+	struct sched_param param {};
 
 	int ret = pthread_getschedparam(pthread_self(), &policy, &param);
 
@@ -338,7 +336,7 @@ static void show_sched_settings()
 static int setRealtimeSched()
 {
 	int policy = SCHED_FIFO;
-	sched_param param;
+	sched_param param {};
 
 	param.sched_priority = 10;
 
@@ -389,7 +387,7 @@ int HRTWorkQueue::initialize()
 {
 	DF_LOG_DEBUG("HRTWorkQueue::initialize");
 
-	pthread_attr_t attr;
+	pthread_attr_t attr {};
 	int ret = pthread_attr_init(&attr);
 
 	if (ret != 0) {
@@ -483,8 +481,14 @@ void HRTWorkQueue::process()
 
 		now = offsetTime();
 		DF_LOG_DEBUG("now=%" PRIu64, now);
+#ifdef __DF_QURT
+
+		// to accomodate sleep inaccuracy in the platform
+		if (next > now + 200) {
+#else
 
 		if (next > now) {
+#endif
 			uint64_t wait_time_usec = next - now;
 
 			DF_LOG_DEBUG("HRTWorkQueue::process waiting for work (%" PRIi64 "usec)", wait_time_usec);

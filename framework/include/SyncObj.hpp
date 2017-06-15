@@ -47,7 +47,7 @@ class SyncObj
 {
 public:
 	SyncObj();
-	~SyncObj();
+	~SyncObj() = default;
 
 	void lock();
 	void unlock();
@@ -56,11 +56,11 @@ public:
 	// Use timeout_us = 0 for blocking wait
 	int waitOnSignal(unsigned long timeout_us);
 
-	void signal(void);
+	void signal();
 
 private:
-	pthread_mutex_t m_lock;
-	pthread_cond_t	m_new_data_cond;
+	pthread_mutex_t m_lock{};
+	pthread_cond_t	m_new_data_cond{};
 };
 
-};
+}

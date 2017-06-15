@@ -90,7 +90,7 @@ void DevMgr::setDevHandleError(DevHandle &h, int error)
 
 int DevMgr::getNextDeviceName(unsigned int &index, const char **dev_path)
 {
-	int idx = 0;
+	unsigned idx = 0;
 
 	/* list directory */
 	DIR *d = ::opendir("/dev");
@@ -100,7 +100,7 @@ int DevMgr::getNextDeviceName(unsigned int &index, const char **dev_path)
 
 		char devname[50];
 
-		while ((direntry = readdir(d)) != NULL) {
+		while ((direntry = readdir(d)) != nullptr) {
 			if (idx == index) {
 				snprintf(devname, sizeof(devname), "/dev/%s", direntry->d_name);
 				*dev_path = direntry->d_name;

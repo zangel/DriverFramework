@@ -39,8 +39,10 @@
 
 using namespace DriverFramework;
 
-ADCPin::ADCPin(uint16_t device_id, uint16_t channel, uint16_t buffer_length)
-	: m_dev_id(device_id), m_dev_path{0}, m_channel(channel), m_buffer_length(buffer_length), m_buffer_enabled(false)
+ADCPin::ADCPin(uint16_t device_id, uint16_t channel, uint16_t buffer_length) :
+	m_dev_id(device_id),
+	m_channel(channel),
+	m_buffer_length(buffer_length)
 {
 
 	// Prepare the device path
@@ -72,7 +74,7 @@ int ADCPin::write(const char *path, int value)
 
 	FILE *pFile = fopen(filename, "w");
 
-	if (pFile == NULL) {
+	if (pFile == nullptr) {
 		DF_LOG_ERR("Unable to open file: %s", filename);
 		return -1;
 	}
@@ -113,7 +115,7 @@ int ADCPin::read(uint16_t *buffer, uint16_t len)
 
 	pFile = fopen(path, "r");
 
-	if (pFile == NULL) {
+	if (pFile == nullptr) {
 		DF_LOG_ERR("%s", strerror(errno));
 		DF_LOG_ERR("Unable to open file: %s", path);
 		return -1;

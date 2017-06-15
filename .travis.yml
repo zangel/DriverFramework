@@ -3,13 +3,17 @@
 
 language: cpp
 
-compiler: clang
-
 matrix:
   fast_finish: true
   include:
     - os: linux
+      dist: trusty
       sudo: false
+      compiler: gcc
+    - os: linux
+      dist: trusty
+      sudo: false
+      compiler: clang
     - os: osx
       osx_image: xcode8
       sudo: true
@@ -30,7 +34,7 @@ before_install:
       pushd .
       && cd ~
       && mkdir -p ~/bin
-      && wget -O ~/bin/astyle https://github.com/PX4/astyle/releases/download/2.05.1/astyle-linux
+      && wget -O ~/bin/astyle https://github.com/PX4/astyle/releases/download/2.06/astyle-linux
       && chmod +x ~/bin/astyle
       && astyle --version
       && popd

@@ -38,8 +38,8 @@
 
 using namespace DriverFramework;
 
-GPIO::GPIO(uint16_t device_id)
-	: m_dev_id(device_id), m_dev_path{0}
+GPIO::GPIO(uint16_t device_id) :
+	m_dev_id(device_id)
 {
 	// Prepare the device path
 	snprintf(m_dev_path, sizeof(m_dev_path), "/sys/class/gpio/gpio%d", m_dev_id);
@@ -65,7 +65,7 @@ int GPIO::write(const char *path, int value)
 
 	FILE *pFile = fopen(filename, "w");
 
-	if (pFile == NULL) {
+	if (pFile == nullptr) {
 		DF_LOG_ERR("Unable to open file: %s", filename);
 		return -1;
 	}

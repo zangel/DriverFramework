@@ -50,7 +50,6 @@ DevObj::DevObj(const char *name, const char *dev_path, const char *dev_class_pat
 	m_dev_instance_path(nullptr),
 	m_sample_interval_usecs(sample_interval_usecs),
 	m_id {},
-	m_work_handle {},
 	m_pub_blocked(false),
 	m_driver_instance(-1),
 	m_refcount(0)
@@ -305,7 +304,7 @@ int DevObj::removeHandle(DevHandle &h)
 	}
 
 	m_handle_lock.unlock();
-	return m_handles.size();
+	return (int)m_handles.size();
 }
 
 void DevObj::updateNotify()

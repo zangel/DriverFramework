@@ -167,9 +167,12 @@ int MPU9250::mpu9250_init()
 	//Therefore, we use the gyro bandwith of 184 Hz which corresponds to 1kHz sampling frequency.
 	result = _writeReg(MPUREG_CONFIG,
 			   BITS_DLPF_CFG_184HZ | BITS_CONFIG_FIFO_MODE_OVERWRITE);
+#elif defined(__DF_RPI_SINGLE)
+	result = _writeReg(MPUREG_CONFIG,
+			   BITS_DLPF_CFG_184HZ | BITS_CONFIG_FIFO_MODE_OVERWRITE);
 #else
 	result = _writeReg(MPUREG_CONFIG,
-			   BITS_DLPF_CFG_250HZ | BITS_CONFIG_FIFO_MODE_OVERWRITE);
+			   BITS_DLPF_CFG_41HZ | BITS_CONFIG_FIFO_MODE_OVERWRITE);
 #endif
 
 	if (result != 0) {
@@ -194,7 +197,7 @@ int MPU9250::mpu9250_init()
 
 	usleep(1000);
 
-	result = _writeReg(MPUREG_ACCEL_CONFIG2, BITS_ACCEL_CONFIG2_BW_1130HZ);
+	result = _writeReg(MPUREG_ACCEL_CONFIG2, BITS_ACCEL_CONFIG2_BW_41HZ);
 
 	if (result != 0) {
 		DF_LOG_ERR("Accel scale config2 failed");
@@ -275,7 +278,7 @@ int MPU9250::start()
 		goto exit;
 	}
 
-	if (sensor_id != MPU_WHOAMI_9250) {
+	if (MPU_WHOAMI_9250 != sensor_id && MPU_WHOAMI_9250_REAL != sensor_id) {
 		DF_LOG_ERR("MPU9250 sensor WHOAMI wrong: 0x%X, should be: 0x%X",
 			   sensor_id, MPU_WHOAMI_9250);
 		result = -1;
@@ -453,6 +456,8 @@ void MPU9250::_measure()
 
 #if defined(__DF_EDISON)
 	//FIFO corrupt at 10MHz.
+	_setBusFrequency(SPI_FREQUENCY_5MHZ);
+#elif defined(__DF_RPI_SINGLE)
 	_setBusFrequency(SPI_FREQUENCY_5MHZ);
 #else
 	_setBusFrequency(SPI_FREQUENCY_10MHZ);

@@ -35,7 +35,16 @@
 
 #include <stdint.h>
 #include "SyncObj.hpp"
+
+#if defined(__DF_OCPOC)
+#define __BARO_USE_SPI
+#endif
+
+#if defined(__BARO_USE_SPI)
+#include "SPIDevObj.hpp"
+#else
 #include "I2CDevObj.hpp"
+#endif
 
 #define BARO_CLASS_PATH  "/dev/baro"
 
@@ -54,14 +63,22 @@ struct baro_sensor_data {
 	uint64_t error_counter;		/*! the total number of errors detected when reading the pressure, since the system was started */
 };
 
+#if defined(__BARO_USE_SPI)
+class BaroSensor : public SPIDevObj
+#else
 class BaroSensor : public I2CDevObj
+#endif
 {
 public:
 	BaroSensor(const char *device_path, unsigned int sample_interval_usec) :
+#if defined(__BARO_USE_SPI)
+		SPIDevObj("BaroSensor", device_path, BARO_CLASS_PATH, sample_interval_usec)
+#else
 		I2CDevObj("BaroSensor", device_path, BARO_CLASS_PATH, sample_interval_usec)
+#endif
 	{}
 
-	~BaroSensor() {}
+	~BaroSensor() = default;
 
 	void setAltimeter(float altimeter_setting_in_mbars)
 	{
@@ -90,15 +107,14 @@ public:
 
 	static void printPressureValues(struct baro_sensor_data &data)
 	{
-		DF_LOG_INFO("Pressure: %.2f Pa, temperature: %.2f C",
-			    (double)data.pressure_pa, (double)data.temperature_c);
+		DF_LOG_INFO("Pressure: %.2f Pa, temperature: %.2f C", (double)data.pressure_pa, (double)data.temperature_c);
 	}
 
 protected:
 	virtual void _measure() = 0;
 
-	struct baro_sensor_data		m_sensor_data;
-	float 				m_altimeter_mbars = 0.0;
+	struct baro_sensor_data	m_sensor_data {};
+	float 				m_altimeter_mbars{0.0f};
 	SyncObj 			m_synchronize;
 };
 

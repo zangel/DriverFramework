@@ -38,8 +38,8 @@
 
 using namespace DriverFramework;
 
-PWM::PWM(uint16_t device_id)
-	: m_dev_id(device_id), m_dev_path{0}
+PWM::PWM(uint16_t device_id) :
+	m_dev_id(device_id)
 {
 	// Prepare the device path
 	snprintf(m_dev_path, sizeof(m_dev_path), "/sys/class/pwm/pwm_%d", m_dev_id);
@@ -80,7 +80,7 @@ int PWM::write(const char *path, int value)
 
 	FILE *pFile = fopen(filename, "w");
 
-	if (pFile == NULL) {
+	if (pFile == nullptr) {
 		DF_LOG_ERR("Unable to open file: %s", filename);
 		return -1;
 	}
